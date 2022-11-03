@@ -18,8 +18,10 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
-import {Usuario} from '../models';
+import {Http2ServerResponse} from 'http2';
+import {Credenciales, Usuario} from '../models';
 import {UsuarioRepository} from '../repositories';
 import {AutenticacionService} from '../services';
 const fetch = require ("node-fetch");
@@ -31,6 +33,32 @@ export class UsuarioController {
     @service(AutenticacionService)
     public servicioAutenticacion: AutenticacionService
     ) {}
+  @post("/identificarUsuario",{
+    responses:{
+      "200" : {
+        description: "Identificacion de Usuarios"
+      }
+    }
+
+  })
+  async identificarUsuario(
+    @requestBody() credenciales : Credenciales
+  ){
+    let u = await this. servicioAutenticacion.IdentificarUsuario(credenciales.usuario, credenciales.contrasena);
+    if(u){
+      let token = this.servicioAutenticacion.GenerarTokenJWT(u);
+      return {
+        datos:{
+          nombre:u.nombre,
+          correo:u.correo,
+          id:u.id
+        },
+        tk: token
+      }
+    }else {
+      throw new HttpErrors[401]("Datos invalidos");
+    }
+  }
 
   @post('/usuarios')
   @response(200, {
@@ -53,7 +81,7 @@ export class UsuarioController {
     let clave = this.servicioAutenticacion.GenerarClave();
     let claveCifrada = this.servicioAutenticacion.CifrarClave(clave);
     usuario.contrasena = claveCifrada;
-    let p = await this.usuarioRepository.create(usuario);
+    let u = await this.usuarioRepository.create(usuario);
     //notificar usuario
     let destino = usuario.correo;
     let asunto = "registro en la plataforma"
@@ -62,7 +90,7 @@ export class UsuarioController {
       .then((data:any)=>{
         console.log(data);
       })
-      return p;
+      return u;
   }
 
   @get('/usuarios/count')
