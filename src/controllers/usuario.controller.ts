@@ -1,61 +1,51 @@
 import {service} from '@loopback/core';
 import {
   Count,
-  CountSchema,
-  DateType,
-  Filter,
+  CountSchema, Filter,
   FilterExcludingWhere,
   repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-  response,
-  HttpErrors,
+  del, get,
+  getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
-import {Http2ServerResponse} from 'http2';
 import {Credenciales, Usuario} from '../models';
 import {UsuarioRepository} from '../repositories';
 import {AutenticacionService} from '../services';
-const fetch = require ("node-fetch");
+const fetch = require("node-fetch");
 
 export class UsuarioController {
   constructor(
     @repository(UsuarioRepository)
-    public usuarioRepository : UsuarioRepository,
+    public usuarioRepository: UsuarioRepository,
     @service(AutenticacionService)
     public servicioAutenticacion: AutenticacionService
-    ) {}
-  @post("/identificarUsuario",{
-    responses:{
-      "200" : {
+  ) { }
+  @post("/identificarUsuario", {
+    responses: {
+      "200": {
         description: "Identificacion de Usuarios"
       }
     }
 
   })
   async identificarUsuario(
-    @requestBody() credenciales : Credenciales
-  ){
-    let u = await this. servicioAutenticacion.IdentificarUsuario(credenciales.usuario, credenciales.contrasena);
-    if(u){
+    @requestBody() credenciales: Credenciales
+  ) {
+    let u = await this.servicioAutenticacion.IdentificarUsuario(credenciales.usuario, credenciales.contrasena);
+    if (u) {
       let token = this.servicioAutenticacion.GenerarTokenJWT(u);
       return {
-        datos:{
-          nombre:u.nombre,
-          correo:u.correo,
-          id:u.id
+        datos: {
+          nombre: u.nombre,
+          correo: u.correo,
+          id: u.id
         },
         tk: token
       }
-    }else {
+    } else {
       throw new HttpErrors[401]("Datos invalidos");
     }
   }
@@ -87,10 +77,10 @@ export class UsuarioController {
     let asunto = "registro en la plataforma"
     let contenido = `Hola ${usuario.nombre}, su usuario es ${usuario.correo}, su contraseña es ${clave}`;
     fetch(`http://127.0.0.1:5000/email?correo_destino=${destino}&asunto=${asunto}&contenido=${contenido}`)
-      .then((data:any)=>{
+      .then((data: any) => {
         console.log(data);
       })
-      return u;
+    return u;
   }
 
   @get('/usuarios/count')
