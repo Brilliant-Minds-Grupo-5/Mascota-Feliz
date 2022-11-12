@@ -1,0 +1,12 @@
+body{
+  background-color: beige;
+}
+
+.imagen {
+
+  margin-left: 50px;
+  border-radius: 30px;
+}
+.Titulo{
+  text-align: center;
+}
