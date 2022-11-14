@@ -28,7 +28,7 @@
       let correo = document.querySelector("#txtCorreo").value;
       let cedula = document.querySelector("#txtCedula").value;
       let telefono = document.querySelector("#txtTelefono").value;
-      let rol = document.querySelector("#txtRol").value;
+      
 
       let url = `http://localhost:3000/usuarios`;
       let datos = {
@@ -37,7 +37,7 @@
         correo: correo,
         cedula: cedula,
         telefono: telefono,
-        rol: rol
+
 
       };
 
